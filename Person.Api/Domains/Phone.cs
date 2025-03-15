@@ -1,10 +1,19 @@
 ﻿namespace Person.Api.Domains
 {
+    public enum PhoneType
+    {
+        Mobile,
+        Office,
+        Home
+    }
+
     public class Phone
     {
-        public int Type { get; set; }
-        public string PhoneNumber { get; set; }
-
         public int Id { get; set; }
+        public PhoneType Type { get; set; }
+        public string Number { get; set; }
+
+        public int PersonId { get; set; }
+        public Person Person { get; set; } = null!;
     }
 }
