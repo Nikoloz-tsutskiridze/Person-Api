@@ -8,7 +8,7 @@ namespace Person.Api.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<City> Cities { get; set; }
-        public DbSet<Domains.Person> People { get; set; }
+        public DbSet<Customer> People { get; set; }
         public DbSet<Phone> Phones { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

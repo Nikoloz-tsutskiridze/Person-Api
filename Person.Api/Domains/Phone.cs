@@ -14,6 +14,6 @@
         public string Number { get; set; }
 
         public int PersonId { get; set; }
-        public Person Person { get; set; } = null!;
+        public Customer Person { get; set; } = null!;
     }
 }

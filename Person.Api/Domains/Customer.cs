@@ -12,7 +12,7 @@ namespace Person.Api.Domains
         Female
     }
 
-    public class Person
+    public class Customer
     {
         [Key]
         public int Id { get; set; }
