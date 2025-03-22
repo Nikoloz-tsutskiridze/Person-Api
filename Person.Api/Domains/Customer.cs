@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
+using BasePerson.Api.Dtos;
 
 namespace Person.Api.Domains
 {
@@ -46,5 +47,20 @@ namespace Person.Api.Domains
         public City City { get; set; }
 
         public List<Phone> Phones { get; set; } = new List<Phone>();
+
+        public CustomerDto ConvertToDto()
+        {
+            var dto = new CustomerDto()
+            {
+                Name = Name,
+                LastName = LastName,
+                Gender = (int)Gender,
+                PersonalNumber = PersonalNumber,
+                DateOfBirth = DateOfBirth,
+                IsAdult = IsAdult,
+                Img = Img
+            };
+            return dto;
+        }
     }
 }

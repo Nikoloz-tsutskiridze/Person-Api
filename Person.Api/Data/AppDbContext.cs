@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BasePerson.Api.Domains;
+using Microsoft.EntityFrameworkCore;
 using Person.Api.Domains;
 
 namespace Person.Api.Data
@@ -10,6 +11,7 @@ namespace Person.Api.Data
         public DbSet<City> Cities { get; set; }
         public DbSet<Customer> People { get; set; }
         public DbSet<Phone> Phones { get; set; }
+        public DbSet<PhoneRelativePerson> PhoneRelativePeople { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

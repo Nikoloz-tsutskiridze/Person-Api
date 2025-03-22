@@ -22,17 +22,7 @@ namespace BasePerson.Api.Controllers
         public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomer()
         {
             var people = await _context.People
-                .Select(p => new CustomerDto
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    LastName = p.LastName,
-                    Gender = (int)p.Gender,
-                    PersonalNumber = p.PersonalNumber,
-                    DateOfBirth = p.DateOfBirth,
-                    IsAdult = p.IsAdult,
-                    Img = p.Img
-                })
+                .Select(x => x.ConvertToDto())
                 .ToListAsync();
 
             return Ok(people);
@@ -43,23 +33,14 @@ namespace BasePerson.Api.Controllers
         public async Task<ActionResult<CustomerDto>> GetCustomer(int id)
         {
             var person = await _context.People
-                .Where(p => p.Id == id)
-                .Select(p => new CustomerDto
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    LastName = p.LastName,
-                    Gender = (int)p.Gender,
-                    PersonalNumber = p.PersonalNumber,
-                    DateOfBirth = p.DateOfBirth,
-                    IsAdult = p.IsAdult,
-                    Img = p.Img
-                })
+                .Where(x => x.Id == id)
+                .Select(x => x.ConvertToDto())
                 .FirstOrDefaultAsync();
 
             if (person == null) return NotFound();
             return Ok(person);
         }
+
 
         // POST: api/Customer
         [HttpPost]
@@ -82,29 +63,16 @@ namespace BasePerson.Api.Controllers
 
             _context.People.Add(person);
             await _context.SaveChangesAsync();
-
-            var createdCustomerDto = new CustomerDto
-            {
-                Id = person.Id,
-                Name = person.Name,
-                LastName = person.LastName,
-                Gender = (int)person.Gender,
-                PersonalNumber = person.PersonalNumber,
-                DateOfBirth = person.DateOfBirth,
-                IsAdult = person.IsAdult,
-                CityId = person.CityId,
-                Img = person.Img
-            };
-
-            return CreatedAtAction(nameof(GetCustomer), new { id = person.Id }, createdCustomerDto);
+            return CreatedAtAction(nameof(GetCustomer), new { id = person.Id });
         }
+
+        //[HttpPost]
+        //public async Task<>
 
         // PUT: api/Customer/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCustomer(int id, CustomerDto customerDto)
         {
-            if (id != customerDto.Id) return BadRequest("ID mismatch");
-
             var existingPerson = await _context.People.FindAsync(id);
             if (existingPerson == null) return NotFound();
 
