@@ -25,9 +25,8 @@ namespace BasePerson.Api.Controllers
                 .Select(x => new PhoneDto
                 {
                     Id = x.Id,
-                    Type = (int)x.Type,
-                    Number = x.Number,
-                    PersonId = x.PersonId
+                    Type = x.Type,
+                    Number = x.Number
                 }).ToListAsync();
 
             return Ok(phones);
@@ -42,9 +41,8 @@ namespace BasePerson.Api.Controllers
                 .Select(x => new PhoneDto
                 {
                     Id = x.Id,
-                    Type = (int)x.Type,
-                    Number = x.Number,
-                    PersonId = x.PersonId
+                    Type = x.Type,
+                    Number = x.Number
                 })
                 .FirstOrDefaultAsync();
 
@@ -55,13 +53,12 @@ namespace BasePerson.Api.Controllers
 
         // POST: api/Phones
         [HttpPost]
-        public async Task<ActionResult<Phone>> PostPhone(PhoneDto phoneDto)
+        public async Task<ActionResult<Phone>> PostPhone(PhoneContentDto phoneDto)
         {
             var phone = new Phone
             {
                 Type = (PhoneType)phoneDto.Type,
                 Number = phoneDto.Number,
-                PersonId = phoneDto.PersonId
             };
 
             _context.Phones.Add(phone);
@@ -79,7 +76,6 @@ namespace BasePerson.Api.Controllers
 
             phone.Type = (PhoneType)phoneDto.Type;
             phone.Number = phoneDto.Number;
-            phone.PersonId = phoneDto.PersonId;
 
             await _context.SaveChangesAsync();
             return Ok();

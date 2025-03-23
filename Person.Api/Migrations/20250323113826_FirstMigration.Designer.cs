@@ -12,8 +12,8 @@ using Person.Api.Data;
 namespace BasePerson.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250314130908_MyFirstMigration")]
-    partial class MyFirstMigration
+    [Migration("20250323113826_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,25 @@ namespace BasePerson.Api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("BasePerson.Api.Domains.PhoneRelativePerson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PhoneId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PhoneRelativePeople");
+                });
 
             modelBuilder.Entity("Person.Api.Domains.City", b =>
                 {
@@ -40,9 +59,26 @@ namespace BasePerson.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Cities");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Tbilisi"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Batumi"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Kutaisi"
+                        });
                 });
 
-            modelBuilder.Entity("Person.Api.Domains.Person", b =>
+            modelBuilder.Entity("Person.Api.Domains.Customer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -56,31 +92,32 @@ namespace BasePerson.Api.Migrations
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
 
                     b.Property<string>("Img")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PersonalNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CityId");
 
-                    b.ToTable("Persons");
+                    b.ToTable("People");
                 });
 
             modelBuilder.Entity("Person.Api.Domains.Phone", b =>
@@ -91,10 +128,10 @@ namespace BasePerson.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("PersonId")
+                    b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<string>("PhoneNumber")
+                    b.Property<string>("Number")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -103,12 +140,12 @@ namespace BasePerson.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PersonId");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Phones");
                 });
 
-            modelBuilder.Entity("Person.Api.Domains.Person", b =>
+            modelBuilder.Entity("Person.Api.Domains.Customer", b =>
                 {
                     b.HasOne("Person.Api.Domains.City", "City")
                         .WithMany()
@@ -121,14 +158,14 @@ namespace BasePerson.Api.Migrations
 
             modelBuilder.Entity("Person.Api.Domains.Phone", b =>
                 {
-                    b.HasOne("Person.Api.Domains.Person", null)
-                        .WithMany("Phone")
-                        .HasForeignKey("PersonId");
+                    b.HasOne("Person.Api.Domains.Customer", null)
+                        .WithMany("Phones")
+                        .HasForeignKey("CustomerId");
                 });
 
-            modelBuilder.Entity("Person.Api.Domains.Person", b =>
+            modelBuilder.Entity("Person.Api.Domains.Customer", b =>
                 {
-                    b.Navigation("Phone");
+                    b.Navigation("Phones");
                 });
 #pragma warning restore 612, 618
         }

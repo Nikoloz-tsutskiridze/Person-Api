@@ -1,4 +1,6 @@
-﻿namespace BasePerson.Api.Dtos
+﻿using BasePerson.Api.Responses;
+
+namespace BasePerson.Api.Dtos
 {
     public class CustomerDto 
     {
@@ -10,5 +12,12 @@
         public bool IsAdult { get; set; }
         public int CityId { get; set; }
         public string? Img { get; set; }
+        
+    }
+
+    public class ExistingCustomerDto : CustomerDto
+    {
+        public int Id { get; set; }
+        public List<PhoneDetailsResponse> Phones { get; set; }
     }
 }

@@ -48,10 +48,11 @@ namespace Person.Api.Domains
 
         public List<Phone> Phones { get; set; } = new List<Phone>();
 
-        public CustomerDto ConvertToDto()
+        public ExistingCustomerDto ConvertToDto()
         {
-            var dto = new CustomerDto()
+            var dto = new ExistingCustomerDto()
             {
+                Id = Id,
                 Name = Name,
                 LastName = LastName,
                 Gender = (int)Gender,

@@ -1,10 +1,17 @@
-﻿namespace BasePerson.Api.Dtos
+﻿using Person.Api.Domains;
+
+namespace BasePerson.Api.Dtos
 {
-    public class PhoneDto
+    public class PhoneDto : PhoneContentDto
     {
         public int Id { get; set; }
-        public int Type { get; set; } 
-        public string Number { get; set; }
+        
         public int PersonId { get; set; }
+    }
+
+    public class PhoneContentDto
+    {
+        public PhoneType Type { get; set; }
+        public string Number { get; set; }
     }
 }

@@ -125,19 +125,19 @@ namespace BasePerson.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Number")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PersonId")
-                        .HasColumnType("int");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PersonId");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Phones");
                 });
@@ -155,13 +155,9 @@ namespace BasePerson.Api.Migrations
 
             modelBuilder.Entity("Person.Api.Domains.Phone", b =>
                 {
-                    b.HasOne("Person.Api.Domains.Customer", "Person")
+                    b.HasOne("Person.Api.Domains.Customer", null)
                         .WithMany("Phones")
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Person");
+                        .HasForeignKey("CustomerId");
                 });
 
             modelBuilder.Entity("Person.Api.Domains.Customer", b =>

@@ -1,8 +1,11 @@
-﻿using BasePerson.Api.Dtos;
+﻿using BasePerson.Api.Domains;
+using BasePerson.Api.Dtos;
+using BasePerson.Api.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Person.Api.Data;
 using Person.Api.Domains;
+using System;
 
 namespace BasePerson.Api.Controllers
 {
@@ -19,11 +22,17 @@ namespace BasePerson.Api.Controllers
 
         // GET: api/Customer
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomer()
+        public async Task<ActionResult<IEnumerable<ExistingCustomerDto>>> GetCustomer()
         {
             var people = await _context.People
                 .Select(x => x.ConvertToDto())
                 .ToListAsync();
+
+            //foreach (var person in people)
+            //{
+            //    var relativePhones = await _context.PhoneRelativePeople.Where(x => x.PersonId == person.Id).ToListAsync();
+            //    person.phoneRelativePeople = relativePhones.Select(x => x.ConvertToDto()).ToList();
+            //}
 
             return Ok(people);
         }
@@ -38,6 +47,25 @@ namespace BasePerson.Api.Controllers
                 .FirstOrDefaultAsync();
 
             if (person == null) return NotFound();
+
+            var relativePhones = await _context.PhoneRelativePeople.Where(x => x.PersonId == id).ToListAsync();
+            var phoneContentDtos = new List<PhoneDetailsResponse>();
+            foreach (var relativePhone in relativePhones)
+            {
+                var phone = await _context.Phones.SingleOrDefaultAsync(x => x.Id == relativePhone.PhoneId);
+                if (phone == null)
+                    continue;
+                var phoneContentDto = new PhoneDetailsResponse() 
+                { 
+                    Number = phone.Number, 
+                    Type = phone.Type,
+                    PhoneId = phone.Id,
+                    ConnectionId = relativePhone.Id
+                };
+                phoneContentDtos.Add(phoneContentDto);
+            }
+            person.Phones = phoneContentDtos;
+
             return Ok(person);
         }
 
@@ -66,14 +94,33 @@ namespace BasePerson.Api.Controllers
             return CreatedAtAction(nameof(GetCustomer), new { id = person.Id });
         }
 
-        //[HttpPost]
-        //public async Task<>
+        [HttpPost]
+        [Route("RelatePhone")]
+        public async Task<ActionResult<int>> RelatePhoneToPerson(PhoneRelativePersonDto phoneRelativePersonDto)
+        {
+            var existingConnection = await _context.PhoneRelativePeople.SingleOrDefaultAsync(x =>
+            x.PersonId == phoneRelativePersonDto.PersonId && x.PhoneId == phoneRelativePersonDto.PhoneId);
+
+            if (existingConnection != null)
+                throw new InvalidOperationException($"This connection already exists! personId:{phoneRelativePersonDto.PersonId} phoneId:{phoneRelativePersonDto.PhoneId}");
+
+            var phoneRelativePerson = new PhoneRelativePerson
+            {
+                PersonId = phoneRelativePersonDto.PersonId,
+                PhoneId = phoneRelativePersonDto.PhoneId,
+            };
+
+            _context.PhoneRelativePeople.Add(phoneRelativePerson);
+            await _context.SaveChangesAsync();
+            return Ok(phoneRelativePerson.Id);
+
+        }
 
         // PUT: api/Customer/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer(int id, CustomerDto customerDto)
+        public async Task<IActionResult> PutCustomer(ExistingCustomerDto customerDto)
         {
-            var existingPerson = await _context.People.FindAsync(id);
+            var existingPerson = await _context.People.FindAsync(customerDto.Id);
             if (existingPerson == null) return NotFound();
 
             existingPerson.Name = customerDto.Name;
