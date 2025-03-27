@@ -25,14 +25,8 @@ namespace BasePerson.Api.Controllers
         public async Task<ActionResult<IEnumerable<ExistingCustomerDto>>> GetCustomer()
         {
             var people = await _context.People
-                .Select(x => x.ConvertToDto())
+               .Select(x => x.ConvertToDto())
                 .ToListAsync();
-
-            //foreach (var person in people)
-            //{
-            //    var relativePhones = await _context.PhoneRelativePeople.Where(x => x.PersonId == person.Id).ToListAsync();
-            //    person.phoneRelativePeople = relativePhones.Select(x => x.ConvertToDto()).ToList();
-            //}
 
             return Ok(people);
         }
@@ -55,9 +49,9 @@ namespace BasePerson.Api.Controllers
                 var phone = await _context.Phones.SingleOrDefaultAsync(x => x.Id == relativePhone.PhoneId);
                 if (phone == null)
                     continue;
-                var phoneContentDto = new PhoneDetailsResponse() 
-                { 
-                    Number = phone.Number, 
+                var phoneContentDto = new PhoneDetailsResponse()
+                {
+                    Number = phone.Number,
                     Type = phone.Type,
                     PhoneId = phone.Id,
                     ConnectionId = relativePhone.Id
@@ -94,27 +88,6 @@ namespace BasePerson.Api.Controllers
             return CreatedAtAction(nameof(GetCustomer), new { id = person.Id });
         }
 
-        [HttpPost]
-        [Route("RelatePhone")]
-        public async Task<ActionResult<int>> RelatePhoneToPerson(PhoneRelativePersonDto phoneRelativePersonDto)
-        {
-            var existingConnection = await _context.PhoneRelativePeople.SingleOrDefaultAsync(x =>
-            x.PersonId == phoneRelativePersonDto.PersonId && x.PhoneId == phoneRelativePersonDto.PhoneId);
-
-            if (existingConnection != null)
-                throw new InvalidOperationException($"This connection already exists! personId:{phoneRelativePersonDto.PersonId} phoneId:{phoneRelativePersonDto.PhoneId}");
-
-            var phoneRelativePerson = new PhoneRelativePerson
-            {
-                PersonId = phoneRelativePersonDto.PersonId,
-                PhoneId = phoneRelativePersonDto.PhoneId,
-            };
-
-            _context.PhoneRelativePeople.Add(phoneRelativePerson);
-            await _context.SaveChangesAsync();
-            return Ok(phoneRelativePerson.Id);
-
-        }
 
         // PUT: api/Customer/5
         [HttpPut("{id}")]

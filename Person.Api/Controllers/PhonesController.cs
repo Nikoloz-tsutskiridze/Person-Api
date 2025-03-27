@@ -55,9 +55,13 @@ namespace BasePerson.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Phone>> PostPhone(PhoneContentDto phoneDto)
         {
+            var existingPhone = await _context.Phones.AnyAsync(x => x.Number == phoneDto.Number);
+
+            if (existingPhone) return BadRequest($"A phone with the number {phoneDto.Number} already exists.");
+
             var phone = new Phone
             {
-                Type = (PhoneType)phoneDto.Type,
+                Type = phoneDto.Type,
                 Number = phoneDto.Number,
             };
 
@@ -74,7 +78,15 @@ namespace BasePerson.Api.Controllers
             var phone = await _context.Phones.FindAsync(id);
             if (phone == null) return NotFound();
 
-            phone.Type = (PhoneType)phoneDto.Type;
+            var phoneExists = await _context.Phones
+            .AnyAsync(x => x.Number == phoneDto.Number && x.Id != id);
+
+            if (phoneExists)
+            {
+                return BadRequest($"A phone with the number {phoneDto.Number} already exists.");
+            }
+
+            phone.Type = phoneDto.Type;
             phone.Number = phoneDto.Number;
 
             await _context.SaveChangesAsync();
