@@ -12,6 +12,7 @@ namespace Person.Api.Data
         public DbSet<Customer> People { get; set; }
         public DbSet<Phone> Phones { get; set; }
         public DbSet<PhoneRelativePerson> PhoneRelativePeople { get; set; }
+        public DbSet<PeopleRelative> PeopleRelative { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -25,6 +25,7 @@ namespace BasePerson.Api.Controllers
             var relations = await _context.PhoneRelativePeople
                 .Select(x => new PhoneRelativePersonDto
                 {
+                    Id = x.Id,
                     PersonId = x.PersonId,
                     PhoneId = x.PhoneId
                 })
@@ -40,6 +41,7 @@ namespace BasePerson.Api.Controllers
             var relations = await _context.PhoneRelativePeople.Where(x => x.PersonId == personId)
                 .Select(x => new PhoneRelativePersonDto
                 {
+                    Id = x.Id,
                     PersonId = x.PersonId,
                     PhoneId = x.PhoneId
                 })
@@ -74,13 +76,12 @@ namespace BasePerson.Api.Controllers
 
         //DELETE: api/RelatePhone/5
         [HttpDelete]
-        public async Task<IActionResult> RemovePhoneRelation(int personId, int phoneId)
+        public async Task<IActionResult> RemovePhoneRelation(int Id)
         {
             var relation = await _context.PhoneRelativePeople.SingleOrDefaultAsync(
-                x => x.PersonId == personId
-                && x.PhoneId == phoneId);
+                x => x.Id == Id);
 
-            if (relation == null) return NotFound("The connection between this person and phone does not exists.");
+            if (relation == null) return NotFound($"The connection doesn't exist {Id}.");
 
             _context.PhoneRelativePeople.Remove(relation);
             await _context.SaveChangesAsync();
