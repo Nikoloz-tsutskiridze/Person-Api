@@ -1,4 +1,5 @@
 ﻿using BasePerson.Api.Dtos;
+using BasePerson.Api.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Person.Api.Data;
@@ -10,43 +11,34 @@ namespace Person.Api.Controllers
     [ApiController]
     public class CitiesController : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public CitiesController(AppDbContext context)
+        private readonly CityRepository _cityRepository;
+        public CitiesController(CityRepository cityRepository)
         {
-            _context = context;
+            _cityRepository = cityRepository;
         }
 
         // GET: api/Cities
         [HttpGet]
         public async Task<ActionResult<IEnumerable<City>>> GetCities()
         {
-            return await _context.Cities.ToListAsync();
+            var cities = await _cityRepository.GetAll();
+            return Ok(cities);
         }
 
         // GET: api/Cities/5
         [HttpGet("{id}")]
         public async Task<ActionResult<City>> GetCity(int id)
         {
-            var city = await _context.Cities.FindAsync(id);
+            var city = await _cityRepository.GetById(id);
             if (city == null) return NotFound();
-            return city;
+            return Ok(city);
         }
 
         // POST: api/Cities
         [HttpPost]
         public async Task<ActionResult<City>> PostCity(CityDto cityDto)
         {
-            var  sameNameCity = _context.Cities.SingleOrDefault(x => x.Name == cityDto.Name);
-            if (sameNameCity != null)
-                throw new InvalidOperationException("this city already exists");
-
-            var city = new City()
-            {
-                Name = cityDto.Name
-            };
-            _context.Cities.Add(city);
-            await _context.SaveChangesAsync();
+            var city = await _cityRepository.Create(cityDto);
             return CreatedAtAction(nameof(GetCity), new { id = city.Id }, city);
         }
 
@@ -54,13 +46,7 @@ namespace Person.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> PutCity(UpdateCityDto updateCityDto)
         {
-            var existingCity = _context.Cities.Find(updateCityDto.Id);
-
-            if (existingCity == null)
-                throw new InvalidOperationException($"City:{updateCityDto.Id} doesn't exist");
-
-            existingCity.Name = updateCityDto.Name;
-            await _context.SaveChangesAsync();
+            await _cityRepository.Update(updateCityDto);
             return Ok();
         }
 
@@ -68,10 +54,7 @@ namespace Person.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCity(int id)
         {
-            var city = await _context.Cities.FindAsync(id);
-            if (city == null) return NotFound();
-            _context.Cities.Remove(city);
-            await _context.SaveChangesAsync();
+            await _cityRepository.Delete(id);
             return Ok();
         }
     }

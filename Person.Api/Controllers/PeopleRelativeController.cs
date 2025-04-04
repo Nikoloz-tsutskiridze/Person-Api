@@ -67,14 +67,15 @@ namespace BasePerson.Api.Controllers
             return Ok(unitedRelations);
         }
 
-        //POST: api/PeopleRelative
+        //POST: api/PeopleRelative 
         [HttpPost]
         public async Task<ActionResult<int>> RelatePersonToPerson(PeopleRelativeDto peopleRelativeDto)
         {
             var existingConnection = await _context.PeopleRelative
-                .SingleOrDefaultAsync(x => x.FirstPersonId == peopleRelativeDto.FirstPersonId
-                && x.SecondPersonId == peopleRelativeDto.SecondPersonId
-                && x.ConnectionType == peopleRelativeDto.ConnectionType
+                .SingleOrDefaultAsync(x =>
+                    (x.FirstPersonId == peopleRelativeDto.FirstPersonId && x.SecondPersonId == peopleRelativeDto.SecondPersonId) ||
+                    (x.FirstPersonId == peopleRelativeDto.SecondPersonId && x.SecondPersonId == peopleRelativeDto.FirstPersonId) &&
+                    x.ConnectionType == peopleRelativeDto.ConnectionType
                 );
 
             if (existingConnection != null)
@@ -92,8 +93,8 @@ namespace BasePerson.Api.Controllers
             _context.PeopleRelative.Add(peopleRelative);
             await _context.SaveChangesAsync();
             return Ok(peopleRelative.Id);
-
         }
+
 
         //DELETE: api/PeopleRelative/5
         [HttpDelete]
