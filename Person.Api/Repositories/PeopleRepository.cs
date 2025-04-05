@@ -9,13 +9,19 @@ using System.Data;
 
 namespace BasePerson.Api.Repositories
 {
-    public class PeopleRepository
+    public class PeopleService : BaseRepository
     {
-        private readonly AppDbContext _appDbContext;
-
-        public PeopleRepository(AppDbContext appDbContext)
+        private readonly RelatePhoneRepository _relatePhoneRepository;
+        private readonly PhonesRepository _phonesRepository;
+        private readonly CityRepository _cityRepository;
+        public PeopleService(AppDbContext appDbContext, 
+            RelatePhoneRepository relatePhoneRepository,
+            PhonesRepository phonesRepository,
+            CityRepository cityRepository) : base(appDbContext)
         {
-            _appDbContext = appDbContext;
+            _relatePhoneRepository = relatePhoneRepository;
+            _phonesRepository = phonesRepository;
+            _cityRepository = cityRepository;
         }
 
         public async Task<IEnumerable<ExistingCustomerDto>> GetAll()
@@ -26,25 +32,18 @@ namespace BasePerson.Api.Repositories
 
             return people;
         }
-
         public async Task<CustomerDto> GetById(int id)
         {
-            var person = await _appDbContext.People
-                .Where(x => x.Id == id)
-                .Select(x => x.ConvertToDto())
-                .FirstOrDefaultAsync();
+            var customer = await GetCustomerFromDatabase(id);
 
-            if (person == null) throw new InvalidOperationException("Person not found");
+            var person = customer.ConvertToDto();
 
-            var relativePhones = await _appDbContext.PhoneRelativePeople
-                .Where(x => x.PersonId == id)
-                .ToListAsync();
+            var relativePhones = await _relatePhoneRepository.GetById(id);
 
             var phoneContentDtos = new List<PhoneDetailsResponse>();
             foreach (var relativePhone in relativePhones)
             {
-                var phone = await _appDbContext.Phones
-                    .SingleOrDefaultAsync(x => x.Id == relativePhone.PhoneId);
+                var phone = await _phonesRepository.GetById(relativePhone.PhoneId);
 
                 if (phone == null)
                     continue;
@@ -63,12 +62,9 @@ namespace BasePerson.Api.Repositories
             person.Phones = phoneContentDtos;
             return person;
         }
-
         public async Task<CustomerDto> Create(CustomerDto customerDto)
         {
-            var cityExists = await _appDbContext.Cities.AnyAsync(c => c.Id == customerDto.CityId);
-            if (!cityExists)
-                throw new InvalidExpressionException($"Invalid CityId: City does not exist.");
+           await _cityRepository.Exist(customerDto.CityId); 
 
             var person = new Customer
             {
@@ -86,11 +82,9 @@ namespace BasePerson.Api.Repositories
             await _appDbContext.SaveChangesAsync();
             return person.ConvertToDto();
         }
-
         public async Task<bool> Update(ExistingCustomerDto customerDto)
         {
-            var existingPerson = await _appDbContext.People.FindAsync(customerDto.Id);
-            if (existingPerson == null) throw new InvalidExpressionException("This person doesn't exists");
+            var existingPerson = await GetCustomerFromDatabase(customerDto.Id);
 
             existingPerson.Name = customerDto.Name;
             existingPerson.LastName = customerDto.LastName;
@@ -102,16 +96,19 @@ namespace BasePerson.Api.Repositories
             await _appDbContext.SaveChangesAsync();
             return true;
         }
-
         public async Task<bool> Delete(int id)
         {
-            var person = await _appDbContext.People.FindAsync(id);
-            if (person == null) throw new InvalidExpressionException("Error deleting person");
-
+            var person = await GetCustomerFromDatabase(id);
             _appDbContext.People.Remove(person);
             await _appDbContext.SaveChangesAsync();
 
             return true;
+        }
+        private async Task<Customer> GetCustomerFromDatabase(int id)
+        {
+            var person = await _appDbContext.People.FindAsync(id);
+            if (person == null) throw new InvalidExpressionException("Error deleting person");
+            return person;
         }
 
     }

@@ -6,13 +6,10 @@ using Person.Api.Domains;
 
 namespace BasePerson.Api.Repositories
 {
-    public class PhonesRepository
+    public class PhonesRepository : BaseRepository
     {
-        private readonly AppDbContext _appDbContext;
-
-        public PhonesRepository(AppDbContext appDbContext)
+        public PhonesRepository(AppDbContext appDbContext) : base(appDbContext)
         {
-            _appDbContext = appDbContext;
         }
 
         public async Task<IEnumerable<PhoneDto>> GetAll()

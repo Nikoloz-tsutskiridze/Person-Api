@@ -2,16 +2,16 @@
 using Microsoft.EntityFrameworkCore;
 using Person.Api.Data;
 using Person.Api.Domains;
+using System.Data;
 
 namespace BasePerson.Api.Repositories
 {
-    public class CityRepository
+    public class CityRepository : BaseRepository
     {
-        private readonly AppDbContext _appDbContext;
-        public CityRepository(AppDbContext appDbContext)
+        public CityRepository(AppDbContext appDbContext) : base(appDbContext)
         {
-            _appDbContext = appDbContext;
         }
+
         public async Task<IEnumerable<City>> GetAll()
         {
             return await _appDbContext.Cities.ToListAsync();
@@ -39,7 +39,7 @@ namespace BasePerson.Api.Repositories
 
         public async Task Update(UpdateCityDto updateCityDto)
         {
-            var existingCity = _appDbContext.Cities.Find(updateCityDto.Id);
+            var existingCity = await GetById(updateCityDto.Id);
 
             if (existingCity == null)
                 throw new InvalidOperationException($"City:{updateCityDto.Id} doesn't exist");
@@ -50,12 +50,19 @@ namespace BasePerson.Api.Repositories
 
         public async Task Delete (int id)
         {
-            var city = await _appDbContext.Cities.FindAsync(id);
+            var city = await GetById(id);
             if (city == null) 
                 throw new InvalidOperationException("City not found");
 
             _appDbContext.Cities.Remove(city);
             await _appDbContext.SaveChangesAsync();
+        }
+
+        public async Task Exist(int id)
+        {
+            var cityExists = await _appDbContext.Cities.AnyAsync(c => c.Id == id);
+            if (!cityExists)
+                throw new InvalidExpressionException($"Invalid CityId: City does not exist.");
         }
     }
 }

@@ -6,13 +6,10 @@ using Person.Api.Data;
 
 namespace BasePerson.Api.Repositories
 {
-    public class RelatePhoneRepository
+    public class RelatePhoneRepository : BaseRepository
     {
-        private AppDbContext _appDbContext;
-
-        public RelatePhoneRepository(AppDbContext appDbContext)
+        public RelatePhoneRepository(AppDbContext appDbContext) : base(appDbContext)
         {
-            _appDbContext = appDbContext;
         }
 
         public async Task<IEnumerable<PhoneRelativePersonDto>> GetAll()
@@ -27,7 +24,7 @@ namespace BasePerson.Api.Repositories
                 .ToListAsync();
         }
 
-        public async Task<ActionResult<IEnumerable<PhoneRelativePersonDto>>> GetById(int personId)
+        public async Task<IEnumerable<PhoneRelativePersonDto>> GetById(int personId)
         {
             return await _appDbContext.PhoneRelativePeople
                 .Where(x => x.PersonId == personId)

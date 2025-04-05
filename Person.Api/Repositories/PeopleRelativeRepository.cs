@@ -4,13 +4,10 @@ using Person.Api.Data;
 using BasePerson.Api.Domains;
 namespace BasePerson.Api.Repositories
 {
-    public class PeopleRelativeRepository
+    public class PeopleRelativeRepository : BaseRepository
     {
-        private readonly AppDbContext _appDbContext;
-
-        public PeopleRelativeRepository(AppDbContext appDbContext)
+        public PeopleRelativeRepository(AppDbContext appDbContext) : base(appDbContext)
         {
-            _appDbContext = appDbContext;
         }
 
         public async Task<IEnumerable<ExsitingPeopleRelativeDto>> GetAll()
