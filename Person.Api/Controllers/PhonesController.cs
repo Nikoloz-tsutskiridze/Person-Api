@@ -1,4 +1,5 @@
 ﻿using BasePerson.Api.Dtos;
+using BasePerson.Api.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Person.Api.Data;
@@ -11,24 +12,19 @@ namespace BasePerson.Api.Controllers
     public class PhonesController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly PhonesRepository _phonesRepository;
 
-        public PhonesController(AppDbContext context)
+        public PhonesController(AppDbContext context,PhonesRepository phonesRepository)
         {
             _context = context;
+            _phonesRepository = phonesRepository;
         }
 
         // GET: api/Phones
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PhoneDto>>> GetPhones()
         {
-            var phones = await _context.Phones
-                .Select(x => new PhoneDto
-                {
-                    Id = x.Id,
-                    Type = x.Type,
-                    Number = x.Number
-                }).ToListAsync();
-
+            var phones = await _phonesRepository.GetAll();
             return Ok(phones);
         }
 
@@ -36,73 +32,32 @@ namespace BasePerson.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PhoneDto>> GetPhone(int id)
         {
-            var phone = await _context.Phones
-                .Where(x => x.Id == id)
-                .Select(x => new PhoneDto
-                {
-                    Id = x.Id,
-                    Type = x.Type,
-                    Number = x.Number
-                })
-                .FirstOrDefaultAsync();
-
-            if (phone == null) return NotFound();
-
-            return phone;
+            var phone = await _phonesRepository.GetById(id);
+            return phone is not null ? Ok(phone) : NotFound($"Phone with ID {id} not found.");
         }
 
         // POST: api/Phones
         [HttpPost]
         public async Task<ActionResult<Phone>> PostPhone(PhoneContentDto phoneDto)
         {
-            var existingPhone = await _context.Phones.AnyAsync(x => x.Number == phoneDto.Number);
-
-            if (existingPhone) return BadRequest($"A phone with the number {phoneDto.Number} already exists.");
-
-            var phone = new Phone
-            {
-                Type = phoneDto.Type,
-                Number = phoneDto.Number,
-            };
-
-            _context.Phones.Add(phone);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetPhone), new { id = phone.Id }, phone);
+            var phoneId = await _phonesRepository.Create(phoneDto);
+            return CreatedAtAction(nameof(GetPhone), new { id = phoneId }, phoneId);
         }
 
         // PUT: api/Phones/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPhone(int id, PhoneDto phoneDto)
         {
-            var phone = await _context.Phones.FindAsync(id);
-            if (phone == null) return NotFound();
-
-            var phoneExists = await _context.Phones
-            .AnyAsync(x => x.Number == phoneDto.Number && x.Id != id);
-
-            if (phoneExists)
-            {
-                return BadRequest($"A phone with the number {phoneDto.Number} already exists.");
-            }
-
-            phone.Type = phoneDto.Type;
-            phone.Number = phoneDto.Number;
-
-            await _context.SaveChangesAsync();
-            return Ok();
+            var updated = await _phonesRepository.Update(id, phoneDto);
+            return updated ? Ok() : NotFound($"Phone with ID {id} not found.");
         }
 
         // DELETE: api/Phones/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePhone(int id)
         {
-            var phone = await _context.Phones.FindAsync(id);
-            if (phone == null) return NotFound();
-
-            _context.Phones.Remove(phone);
-            await _context.SaveChangesAsync();
-            return Ok();
+            var deleted = await _phonesRepository.Delete(id);
+            return deleted ? NoContent() : NotFound($"Phone with ID {id} not found.");
         }
     }
 }

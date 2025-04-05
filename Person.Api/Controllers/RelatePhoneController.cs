@@ -1,5 +1,6 @@
 ﻿using BasePerson.Api.Domains;
 using BasePerson.Api.Dtos;
+using BasePerson.Api.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,26 +12,18 @@ namespace BasePerson.Api.Controllers
     [ApiController]
     public class RelatePhoneController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly RelatePhoneRepository _relatePhoneRepository;
 
-        public RelatePhoneController(AppDbContext context)
+        public RelatePhoneController(RelatePhoneRepository relatePhoneRepository)
         {
-            _context = context;
+            _relatePhoneRepository = relatePhoneRepository;
         }
 
         //GET: api/RelatePhone
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PhoneRelativePersonDto>>> GetPhoneRelations()
         {
-            var relations = await _context.PhoneRelativePeople
-                .Select(x => new PhoneRelativePersonDto
-                {
-                    Id = x.Id,
-                    PersonId = x.PersonId,
-                    PhoneId = x.PhoneId
-                })
-                .ToListAsync();
-
+            var relations = await _relatePhoneRepository.GetAll();
             return Ok(relations);
         }
 
@@ -38,55 +31,31 @@ namespace BasePerson.Api.Controllers
         [HttpGet("Person/{personId}")]
         public async Task<ActionResult<IEnumerable<PhoneRelativePersonDto>>> GetPhoneRelationsById(int personId)
         {
-            var relations = await _context.PhoneRelativePeople.Where(x => x.PersonId == personId)
-                .Select(x => new PhoneRelativePersonDto
-                {
-                    Id = x.Id,
-                    PersonId = x.PersonId,
-                    PhoneId = x.PhoneId
-                })
-                .ToListAsync();
+            var relations = await _relatePhoneRepository.GetById(personId);
 
-            if (!relations.Any()) return NotFound("No phone relations found for this person.");
+            if (relations.Value == null || !relations.Value.Any())
+                return NotFound("No phone relations found for this person.");
 
-            return Ok(relations);
+            return Ok(relations.Value);
         }
 
         //POST: api/RelatePhone
         [HttpPost]
         public async Task<ActionResult<int>> RelatePhoneToPerson(PhoneRelativePersonDto phoneRelativePersonDto)
         {
-            var existingConnection = await _context.PhoneRelativePeople.SingleOrDefaultAsync(x =>
-            x.PersonId == phoneRelativePersonDto.PersonId && x.PhoneId == phoneRelativePersonDto.PhoneId);
-
-            if (existingConnection != null)
-                throw new InvalidOperationException($"This connection already exists! personId:{phoneRelativePersonDto.PersonId} phoneId:{phoneRelativePersonDto.PhoneId}");
-
-            var phoneRelativePerson = new PhoneRelativePerson
-            {
-                PersonId = phoneRelativePersonDto.PersonId,
-                PhoneId = phoneRelativePersonDto.PhoneId,
-            };
-
-            _context.PhoneRelativePeople.Add(phoneRelativePerson);
-            await _context.SaveChangesAsync();
-            return Ok(phoneRelativePerson.Id);
-
+                var phoneRelativePerson = await _relatePhoneRepository.Create(phoneRelativePersonDto);
+                return Ok(phoneRelativePerson.Id);
         }
 
         //DELETE: api/RelatePhone/5
-        [HttpDelete]
-        public async Task<IActionResult> RemovePhoneRelation(int Id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> RemovePhoneRelation(int id)
         {
-            var relation = await _context.PhoneRelativePeople.SingleOrDefaultAsync(
-                x => x.Id == Id);
+            var success = await _relatePhoneRepository.RemovePhoneRelation(id);
+            if (!success)
+                return NotFound($"The connection with id {id} doesn't exist.");
 
-            if (relation == null) return NotFound($"The connection doesn't exist {Id}.");
-
-            _context.PhoneRelativePeople.Remove(relation);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok();
         }
     }
 }
