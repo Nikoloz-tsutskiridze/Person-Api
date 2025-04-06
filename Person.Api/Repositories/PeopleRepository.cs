@@ -62,13 +62,12 @@ namespace BasePerson.Api.Repositories
             person.Phones = phoneContentDtos;
             return person;
         }
-        public async Task<CustomerDto> Create(CustomerDto customerDto)
+        public async Task<ExistingCustomerDto> Create(CustomerDto customerDto)
         {
            await _cityRepository.Exist(customerDto.CityId); 
 
             var person = new Customer
             {
-                Id = customerDto.Id,
                 Name = customerDto.Name,
                 LastName = customerDto.LastName,
                 Gender = (Gender)customerDto.Gender,

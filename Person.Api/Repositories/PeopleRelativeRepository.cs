@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Person.Api.Data;
 using BasePerson.Api.Domains;
+using System.Linq.Expressions;
 namespace BasePerson.Api.Repositories
 {
     public class PeopleRelativeRepository : BaseRepository
@@ -13,39 +14,23 @@ namespace BasePerson.Api.Repositories
         public async Task<IEnumerable<ExsitingPeopleRelativeDto>> GetAll()
         {
             return await _appDbContext.PeopleRelative
-                .Select(x => new ExsitingPeopleRelativeDto
-                {
-                    Id = x.Id,
-                    FirstPersonId = x.FirstPersonId,
-                    SecondPersonId = x.SecondPersonId,
-                    ConnectionType = x.ConnectionType,
-                })
+                .Select(x => x.ConvertToDto())
                 .ToListAsync();
+        }
+
+        private async Task<IEnumerable<ExsitingPeopleRelativeDto>> GetById(Expression<Func<PeopleRelative, bool>> filterOption)
+        {
+            var relations = await _appDbContext.PeopleRelative
+                .Where(filterOption)
+                .Select(x => x.ConvertToDto())
+                .ToListAsync();
+            return relations;
         }
 
         public async Task<IEnumerable<ExsitingPeopleRelativeDto>> GetById(int personId)
         {
-            var relationsForFirst = await _appDbContext.PeopleRelative
-                 .Where(x => x.FirstPersonId == personId)
-                 .Select(x => new ExsitingPeopleRelativeDto
-                 {
-                     Id = x.Id,
-                     FirstPersonId = x.FirstPersonId,
-                     SecondPersonId = x.SecondPersonId,
-                     ConnectionType = x.ConnectionType,
-                 })
-                 .ToListAsync();
-
-            var relationsForSecond = await _appDbContext.PeopleRelative
-                .Where(x => x.SecondPersonId == personId)
-                .Select(x => new ExsitingPeopleRelativeDto
-                {
-                    Id = x.Id,
-                    FirstPersonId = x.FirstPersonId,
-                    SecondPersonId = x.SecondPersonId,
-                    ConnectionType = x.ConnectionType,
-                })
-                .ToListAsync();
+            var relationsForFirst = await GetById(x => x.FirstPersonId == personId);
+            var relationsForSecond = await GetById(x => x.SecondPersonId == personId);
 
             return relationsForFirst.Concat(relationsForSecond).ToList();
         }

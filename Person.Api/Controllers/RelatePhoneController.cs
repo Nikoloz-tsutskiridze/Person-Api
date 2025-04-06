@@ -33,10 +33,10 @@ namespace BasePerson.Api.Controllers
         {
             var relations = await _relatePhoneRepository.GetById(personId);
 
-            if (relations.Value == null || !relations.Value.Any())
+            if (relations == null || !relations.Any())
                 return NotFound("No phone relations found for this person.");
 
-            return Ok(relations.Value);
+            return Ok(relations);
         }
 
         //POST: api/RelatePhone

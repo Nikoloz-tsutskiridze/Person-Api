@@ -1,4 +1,6 @@
-﻿namespace BasePerson.Api.Domains
+﻿using BasePerson.Api.Dtos;
+
+namespace BasePerson.Api.Domains
 {
     public enum PersonType
     {
@@ -12,5 +14,18 @@
         public int FirstPersonId { get; set; }
         public int SecondPersonId { get; set; }
         public PersonType ConnectionType { get; set; }
+
+        public ExsitingPeopleRelativeDto ConvertToDto()
+        {
+            var Dto = new ExsitingPeopleRelativeDto
+            {
+                Id = Id,
+                FirstPersonId = FirstPersonId,
+                SecondPersonId = SecondPersonId,
+                ConnectionType = ConnectionType,
+            };
+
+            return Dto;
+        }
     }
 }

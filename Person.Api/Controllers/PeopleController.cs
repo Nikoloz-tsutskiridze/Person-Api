@@ -14,9 +14,9 @@ namespace BasePerson.Api.Controllers
     [ApiController]
     public class PeopleController : ControllerBase
     {
-        private readonly PeopleRepository _peopleRepository;
+        private readonly PeopleService _peopleRepository;
 
-        public PeopleController(PeopleRepository peopleRepository)
+        public PeopleController(PeopleService peopleRepository)
         {
             _peopleRepository = peopleRepository;
         }
