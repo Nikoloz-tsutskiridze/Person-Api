@@ -46,6 +46,18 @@ namespace BasePerson.Api.Controllers
             return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.Id }, createdCustomer);
         }
 
+        [HttpPost("ConnectPeople")]
+        public async Task<int> ConnectPeople(PeopleRelativeDto peopleRelativeDto)
+        {
+            return await _peopleRepository.ConnectPeople(peopleRelativeDto);
+        }
+
+        [HttpDelete("DeleteConnection")]
+        public async Task<bool> DisconnectPeople(int connectionId)
+        {
+            return await _peopleRepository.DisconnectPeople(connectionId);
+        }
+
 
         // PUT: api/Customer/5
         [HttpPut("{id}")]

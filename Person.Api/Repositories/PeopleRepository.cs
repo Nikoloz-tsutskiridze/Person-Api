@@ -1,4 +1,5 @@
-﻿using BasePerson.Api.Dtos;
+﻿using BasePerson.Api.Domains;
+using BasePerson.Api.Dtos;
 using BasePerson.Api.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using Person.Api.Data;
 using Person.Api.Domains;
 using System;
 using System.Data;
+using System.Linq.Expressions;
 
 namespace BasePerson.Api.Repositories
 {
@@ -14,7 +16,7 @@ namespace BasePerson.Api.Repositories
         private readonly RelatePhoneRepository _relatePhoneRepository;
         private readonly PhonesRepository _phonesRepository;
         private readonly CityRepository _cityRepository;
-        public PeopleService(AppDbContext appDbContext, 
+        public PeopleService(AppDbContext appDbContext,
             RelatePhoneRepository relatePhoneRepository,
             PhonesRepository phonesRepository,
             CityRepository cityRepository) : base(appDbContext)
@@ -32,14 +34,14 @@ namespace BasePerson.Api.Repositories
 
             return people;
         }
-        public async Task<CustomerDto> GetById(int id)
+        public async Task<ExistingCustomerDto> GetById(int id)
         {
             var customer = await GetCustomerFromDatabase(id);
 
             var person = customer.ConvertToDto();
 
+            #region Phones
             var relativePhones = await _relatePhoneRepository.GetById(id);
-
             var phoneContentDtos = new List<PhoneDetailsResponse>();
             foreach (var relativePhone in relativePhones)
             {
@@ -58,13 +60,63 @@ namespace BasePerson.Api.Repositories
 
                 phoneContentDtos.Add(phoneContentDto);
             }
-
             person.Phones = phoneContentDtos;
+            #endregion
+
+            var relations = await _appDbContext.PeopleRelative
+                .Where(x => x.FirstPersonId == id || x.SecondPersonId == id)
+                .Select(x => new PersonDetailsResponse(
+                    x.ConnectionType,
+                    x.FirstPersonId == id ? x.SecondPersonId : x.FirstPersonId,
+                    x.Id
+                ))
+                .ToListAsync();
+            person.ConnectedPeople = relations;
+
             return person;
+        }
+        public async Task<int> ConnectPeople(PeopleRelativeDto peopleRelativeDto)
+        {
+            var existingConnection = await _appDbContext.PeopleRelative
+                .SingleOrDefaultAsync(x =>
+                   ((x.FirstPersonId == peopleRelativeDto.FirstPersonId && x.SecondPersonId == peopleRelativeDto.SecondPersonId) ||
+                   (x.FirstPersonId == peopleRelativeDto.SecondPersonId && x.SecondPersonId == peopleRelativeDto.FirstPersonId)) &&
+                   x.ConnectionType == peopleRelativeDto.ConnectionType
+
+                );
+
+            if (existingConnection != null)
+                throw new InvalidOperationException($"This connection already exists! " +
+                    $"First Person ID:{peopleRelativeDto.FirstPersonId} " +
+                    $"Second Person ID:{peopleRelativeDto.SecondPersonId}");
+
+            var peopleRelative = new PeopleRelative
+            {
+                FirstPersonId = peopleRelativeDto.FirstPersonId,
+                SecondPersonId = peopleRelativeDto.SecondPersonId,
+                ConnectionType = peopleRelativeDto.ConnectionType,
+            };
+
+            _appDbContext.PeopleRelative.Add(peopleRelative);
+            await _appDbContext.SaveChangesAsync();
+
+            return peopleRelative.Id;
+        }
+        public async Task<bool> DisconnectPeople(int connectionId)
+        {
+            var relation = await _appDbContext.PeopleRelative.SingleOrDefaultAsync(
+               x => x.Id == connectionId);
+
+            if (relation == null) throw new InvalidOperationException($"The connection doesn't exist {connectionId}.");
+
+            _appDbContext.PeopleRelative.Remove(relation);
+            await _appDbContext.SaveChangesAsync();
+
+            return true;
         }
         public async Task<ExistingCustomerDto> Create(CustomerDto customerDto)
         {
-           await _cityRepository.Exist(customerDto.CityId); 
+            await _cityRepository.Exist(customerDto.CityId);
 
             var person = new Customer
             {
@@ -106,9 +158,9 @@ namespace BasePerson.Api.Repositories
         private async Task<Customer> GetCustomerFromDatabase(int id)
         {
             var person = await _appDbContext.People.FindAsync(id);
-            if (person == null) throw new InvalidExpressionException("Error deleting person");
+            if (person == null)
+                throw new InvalidOperationException($"Couldn't find person ID:{id}");
             return person;
         }
-
     }
 }

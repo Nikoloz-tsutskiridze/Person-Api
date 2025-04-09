@@ -8,6 +8,7 @@ namespace BasePerson.Api.Repositories
 {
     public class CityRepository : BaseRepository
     {
+        private const string CityAlreadyExists = "This city already exists";
         public CityRepository(AppDbContext appDbContext) : base(appDbContext)
         {
         }
@@ -24,7 +25,7 @@ namespace BasePerson.Api.Repositories
         public async Task<City> Create(CityDto cityDto)
         {
             if (_appDbContext.Cities.Any(x => x.Name == cityDto.Name))
-                throw new InvalidOperationException("This city already exists");
+                throw new InvalidOperationException(CityAlreadyExists);
 
             var city = new City()
             {
@@ -39,10 +40,16 @@ namespace BasePerson.Api.Repositories
 
         public async Task Update(UpdateCityDto updateCityDto)
         {
+            if (_appDbContext.Cities.Any(x => x.Name == updateCityDto.Name && x.Id != updateCityDto.Id))
+                throw new InvalidOperationException(CityAlreadyExists);
+
             var existingCity = await GetById(updateCityDto.Id);
 
             if (existingCity == null)
                 throw new InvalidOperationException($"City:{updateCityDto.Id} doesn't exist");
+
+            if (existingCity.Name == updateCityDto.Name)
+                return;
 
             existingCity.Name = updateCityDto.Name;
             await _appDbContext.SaveChangesAsync();

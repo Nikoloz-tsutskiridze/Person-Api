@@ -19,5 +19,6 @@ namespace BasePerson.Api.Dtos
     {
         public int Id { get; set; }
         public List<PhoneDetailsResponse>? Phones { get; set; }
+        public List<PersonDetailsResponse> ConnectedPeople { get; set; }
     }
 }
