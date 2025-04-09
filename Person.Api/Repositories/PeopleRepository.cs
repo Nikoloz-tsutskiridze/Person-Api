@@ -13,15 +13,12 @@ namespace BasePerson.Api.Repositories
 {
     public class PeopleService : BaseRepository
     {
-        private readonly RelatePhoneRepository _relatePhoneRepository;
         private readonly PhonesRepository _phonesRepository;
         private readonly CityRepository _cityRepository;
         public PeopleService(AppDbContext appDbContext,
-            RelatePhoneRepository relatePhoneRepository,
             PhonesRepository phonesRepository,
             CityRepository cityRepository) : base(appDbContext)
         {
-            _relatePhoneRepository = relatePhoneRepository;
             _phonesRepository = phonesRepository;
             _cityRepository = cityRepository;
         }
@@ -41,7 +38,7 @@ namespace BasePerson.Api.Repositories
             var person = customer.ConvertToDto();
 
             #region Phones
-            var relativePhones = await _relatePhoneRepository.GetById(id);
+            var relativePhones = await _appDbContext.PhoneRelativePeople.Where(x => x.PersonId == id).ToListAsync();
             var phoneContentDtos = new List<PhoneDetailsResponse>();
             foreach (var relativePhone in relativePhones)
             {
@@ -161,6 +158,31 @@ namespace BasePerson.Api.Repositories
             if (person == null)
                 throw new InvalidOperationException($"Couldn't find person ID:{id}");
             return person;
+        }
+
+        public async Task<int> ConnectPhone(PhoneRelativePersonDto phoneRelativePersonDto)
+        {
+            // exeftioni ori ertnairi kavshiri roar sheiqnas persons shoris
+
+            var phoneRelativePerson = new PhoneRelativePerson
+            {
+                PersonId = phoneRelativePersonDto.PersonId,
+                PhoneId = phoneRelativePersonDto.PhoneId
+            };
+
+            _appDbContext.PhoneRelativePeople.Add(phoneRelativePerson);
+            await _appDbContext.SaveChangesAsync();
+            return phoneRelativePerson.Id;
+        }
+
+        public async Task<bool> DisconectPhone(int id)
+        {
+            var relation = await _appDbContext.PhoneRelativePeople.SingleOrDefaultAsync(x => x.Id == id);
+            if (relation == null) return false;
+
+            _appDbContext.PhoneRelativePeople.Remove(relation);
+            await _appDbContext.SaveChangesAsync();
+            return true;
         }
     }
 }
