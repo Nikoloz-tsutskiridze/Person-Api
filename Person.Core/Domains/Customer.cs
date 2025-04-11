@@ -3,9 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
-using BasePerson.Api.Dtos;
+using BasePerson.Core.Dtos;
+using Person.Core.Domains;
 
-namespace Person.Api.Domains
+namespace Person.Core.Domains
 {
     public enum Gender
     {
@@ -38,7 +39,7 @@ namespace Person.Api.Domains
         public DateTime DateOfBirth { get; set; }
 
         [NotMapped]
-        public bool IsAdult => (DateTime.Now.Year - DateOfBirth.Year) >= 18;
+        public bool IsAdult => DateTime.Now.Year - DateOfBirth.Year >= 18;
 
         public string? Img { get; set; }
 

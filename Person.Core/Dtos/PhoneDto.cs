@@ -1,6 +1,6 @@
-﻿using Person.Api.Domains;
+﻿using Person.Core.Domains;
 
-namespace BasePerson.Api.Dtos
+namespace BasePerson.Core.Dtos
 {
     public class PhoneDto : PhoneContentDto
     {

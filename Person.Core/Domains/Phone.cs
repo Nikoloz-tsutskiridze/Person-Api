@@ -1,7 +1,7 @@
-﻿using BasePerson.Api.Dtos;
+﻿using BasePerson.Core.Dtos;
 using System.Numerics;
 
-namespace Person.Api.Domains
+namespace Person.Core.Domains
 {
     public enum PhoneType
     {

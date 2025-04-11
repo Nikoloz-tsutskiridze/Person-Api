@@ -1,8 +1,8 @@
-﻿using BasePerson.Api.Dtos;
+﻿using BasePerson.Core.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Person.Api.Data;
-using Person.Api.Domains;
+using Person.Core.Domains;
 
 namespace BasePerson.Api.Repositories
 {

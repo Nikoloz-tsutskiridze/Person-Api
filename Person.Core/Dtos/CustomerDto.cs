@@ -1,6 +1,6 @@
-﻿using BasePerson.Api.Responses;
+﻿using BasePerson.Core.Responses;
 
-namespace BasePerson.Api.Dtos
+namespace BasePerson.Core.Dtos
 {
     public class CustomerDto 
     {

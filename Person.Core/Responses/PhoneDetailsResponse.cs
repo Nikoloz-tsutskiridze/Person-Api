@@ -1,7 +1,7 @@
-﻿using BasePerson.Api.Domains;
-using Person.Api.Domains;
+﻿using BasePerson.Core.Domains;
+using Person.Core.Domains;
 
-namespace BasePerson.Api.Responses
+namespace BasePerson.Core.Responses
 {
     public class PhoneDetailsResponse
     {

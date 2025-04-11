@@ -1,4 +1,4 @@
-﻿namespace BasePerson.Api.Dtos
+﻿namespace BasePerson.Core.Dtos
 {
     public class PhoneRelativePersonDto 
     {

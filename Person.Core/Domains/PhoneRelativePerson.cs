@@ -1,7 +1,6 @@
-﻿using BasePerson.Api.Dtos;
-using Person.Api.Domains;
+﻿using BasePerson.Core.Dtos;
 
-namespace BasePerson.Api.Domains
+namespace BasePerson.Core.Domains
 {
     public class PhoneRelativePerson
     {

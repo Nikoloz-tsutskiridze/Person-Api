@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35828.75 d17.13
+VisualStudioVersion = 17.13.35828.75
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasePerson.Api", "Person.Api\BasePerson.Api.csproj", "{3BBCC1B3-0A82-4738-8DEC-F1CD893F7249}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BirthDayCheckerService", "BirchDayCheckerService\BirthDayCheckerService.csproj", "{47D317D3-4881-4E2D-92A2-0BF40C675D3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Person.Core", "Person.Core\Person.Core.csproj", "{6B7DF392-75AC-4221-AB7C-FF049C75F4F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{3BBCC1B3-0A82-4738-8DEC-F1CD893F7249}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BBCC1B3-0A82-4738-8DEC-F1CD893F7249}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BBCC1B3-0A82-4738-8DEC-F1CD893F7249}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47D317D3-4881-4E2D-92A2-0BF40C675D3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47D317D3-4881-4E2D-92A2-0BF40C675D3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47D317D3-4881-4E2D-92A2-0BF40C675D3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47D317D3-4881-4E2D-92A2-0BF40C675D3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B7DF392-75AC-4221-AB7C-FF049C75F4F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B7DF392-75AC-4221-AB7C-FF049C75F4F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B7DF392-75AC-4221-AB7C-FF049C75F4F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B7DF392-75AC-4221-AB7C-FF049C75F4F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

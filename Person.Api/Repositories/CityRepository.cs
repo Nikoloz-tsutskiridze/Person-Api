@@ -1,7 +1,7 @@
-﻿using BasePerson.Api.Dtos;
+﻿using BasePerson.Core.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Person.Api.Data;
-using Person.Api.Domains;
+using Person.Core.Domains;
 using System.Data;
 
 namespace BasePerson.Api.Repositories

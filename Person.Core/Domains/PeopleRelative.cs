@@ -1,6 +1,6 @@
-﻿using BasePerson.Api.Dtos;
+﻿using BasePerson.Core.Dtos;
 
-namespace BasePerson.Api.Domains
+namespace BasePerson.Core.Domains
 {
     public enum PersonType
     {

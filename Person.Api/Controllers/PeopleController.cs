@@ -1,12 +1,6 @@
-﻿using BasePerson.Api.Domains;
-using BasePerson.Api.Dtos;
+﻿using BasePerson.Core.Dtos;
 using BasePerson.Api.Repositories;
-using BasePerson.Api.Responses;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Person.Api.Data;
-using Person.Api.Domains;
-using System;
 
 namespace BasePerson.Api.Controllers
 {

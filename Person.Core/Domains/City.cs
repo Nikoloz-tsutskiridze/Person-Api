@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Person.Api.Domains
+namespace Person.Core.Domains
 {
     public class City
     {

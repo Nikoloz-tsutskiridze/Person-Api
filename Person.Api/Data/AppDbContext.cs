@@ -1,6 +1,6 @@
-﻿using BasePerson.Api.Domains;
+﻿using BasePerson.Core.Domains;
 using Microsoft.EntityFrameworkCore;
-using Person.Api.Domains;
+using Person.Core.Domains;
 
 namespace Person.Api.Data
 {

@@ -1,10 +1,11 @@
-﻿using BasePerson.Api.Domains;
-using BasePerson.Api.Dtos;
-using BasePerson.Api.Responses;
+﻿using BasePerson.Core.Domains;
+using BasePerson.Core.Dtos;
+using BasePerson.Core.Responses;
+using BasePerson.Core.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Person.Api.Data;
-using Person.Api.Domains;
+using Person.Core.Domains;
 using System;
 using System.Data;
 using System.Linq.Expressions;

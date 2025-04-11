@@ -1,6 +1,6 @@
-﻿using BasePerson.Api.Domains;
+﻿using BasePerson.Core.Domains;
 
-namespace BasePerson.Api.Dtos
+namespace BasePerson.Core.Dtos
 {
     public class PeopleRelativeDto
     {
