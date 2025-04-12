@@ -1,17 +1,17 @@
 ﻿using BasePerson.Core.Dtos;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Person.Api.Data;
+using Person.Application.Interfaces;
 using Person.Core.Domains;
+using Person.Infrastructure.Data;
+using Person.Infrastructure.Repositories;
 
 namespace BasePerson.Api.Repositories
 {
-    public class PhonesRepository : BaseRepository
+    public class PhonesRepository : BaseRepository, IPhoneRepository
     {
         public PhonesRepository(AppDbContext appDbContext) : base(appDbContext)
         {
         }
-
         public async Task<IEnumerable<PhoneDto>> GetAll()
         {
             return await _appDbContext.Phones
@@ -28,7 +28,6 @@ namespace BasePerson.Api.Repositories
             var phoneDto = phone.ConvertToDto();
             return phoneDto;
         }
-
         public async Task<int> Create(PhoneContentDto phoneDto)
         {
             await Validation(phoneDto);
@@ -43,14 +42,12 @@ namespace BasePerson.Api.Repositories
             await _appDbContext.SaveChangesAsync();
             return phone.Id;
         }
-
         private async Task Validation(PhoneContentDto phoneDto)
         {
             var existingPhone = await _appDbContext.Phones.AnyAsync(x => x.Number == phoneDto.Number);
             if (existingPhone) throw new InvalidOperationException($"A phone with the number {phoneDto.Number} already exists.");
 
         }
-
         public async Task<bool> Update(int id, PhoneDto phoneDto)
         {
             var phone = await GetFromDatabase(phoneDto.Id);
@@ -66,7 +63,6 @@ namespace BasePerson.Api.Repositories
             await _appDbContext.SaveChangesAsync();
             return true;
         }
-
         public async Task<bool> Delete(int id)
         {
            var phone = await GetFromDatabase(id);
@@ -75,7 +71,6 @@ namespace BasePerson.Api.Repositories
             await _appDbContext.SaveChangesAsync();
             return true;
         }
-
         private async Task<Phone> GetFromDatabase(int id)
         {
             var phone = await _appDbContext.Phones.FindAsync(id);
@@ -83,6 +78,5 @@ namespace BasePerson.Api.Repositories
 
             return phone;
         }
-
     }
 }

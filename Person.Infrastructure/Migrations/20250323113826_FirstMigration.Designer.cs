@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Person.Api.Data;
+using Person.Infrastructure.Data;
 
 #nullable disable
 
 namespace BasePerson.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250401132009_PeopleRelative")]
-    partial class PeopleRelative
+    [Migration("20250323113826_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,28 +24,6 @@ namespace BasePerson.Api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("BasePerson.Api.Domains.PeopleRelative", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ConnectionType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FirstPersonId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SecondPersonId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PeopleRelative");
-                });
 
             modelBuilder.Entity("BasePerson.Api.Domains.PhoneRelativePerson", b =>
                 {

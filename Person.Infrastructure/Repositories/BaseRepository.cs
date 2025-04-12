@@ -1,6 +1,6 @@
-﻿using Person.Api.Data;
+﻿using Person.Infrastructure.Data;
 
-namespace BasePerson.Api.Repositories
+namespace Person.Infrastructure.Repositories
 {
     public class BaseRepository
     {

@@ -1,4 +1,4 @@
-﻿namespace Person.Core
+﻿namespace Person.Application
 {
     public class Class1
     {

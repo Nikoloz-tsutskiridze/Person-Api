@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Person.Core.Domains;
 
-namespace Person.Api.Data
+namespace Person.Infrastructure.Data
 {
     public class AppDbContext : DbContext
     {

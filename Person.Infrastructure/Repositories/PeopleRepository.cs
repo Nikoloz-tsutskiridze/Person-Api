@@ -1,18 +1,16 @@
 ﻿using BasePerson.Core.Domains;
 using BasePerson.Core.Dtos;
 using BasePerson.Core.Responses;
-using BasePerson.Core.Dtos;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Person.Api.Data;
 using Person.Core.Domains;
-using System;
 using System.Data;
-using System.Linq.Expressions;
+using Person.Application.Interfaces;
+using Person.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Person.Infrastructure.Data;
 
 namespace BasePerson.Api.Repositories
 {
-    public class PeopleService : BaseRepository
+    public class PeopleService : BaseRepository , IPeopleRepository
     {
         private readonly PhonesRepository _phonesRepository;
         private readonly CityRepository _cityRepository;
@@ -160,7 +158,6 @@ namespace BasePerson.Api.Repositories
                 throw new InvalidOperationException($"Couldn't find person ID:{id}");
             return person;
         }
-
         public async Task<int> ConnectPhone(PhoneRelativePersonDto phoneRelativePersonDto)
         {
             // exeftioni ori ertnairi kavshiri roar sheiqnas persons shoris
@@ -175,7 +172,6 @@ namespace BasePerson.Api.Repositories
             await _appDbContext.SaveChangesAsync();
             return phoneRelativePerson.Id;
         }
-
         public async Task<bool> DisconectPhone(int id)
         {
             var relation = await _appDbContext.PhoneRelativePeople.SingleOrDefaultAsync(x => x.Id == id);

@@ -1,18 +1,18 @@
 ﻿using BasePerson.Core.Dtos;
 using Microsoft.EntityFrameworkCore;
-using Person.Api.Data;
+using Person.Application.Interfaces;
 using Person.Core.Domains;
+using Person.Infrastructure.Data;
 using System.Data;
 
-namespace BasePerson.Api.Repositories
+namespace Person.Infrastructure.Repositories
 {
-    public class CityRepository : BaseRepository
+    public class CityRepository : BaseRepository, ICityRepository
     {
         private const string CityAlreadyExists = "This city already exists";
         public CityRepository(AppDbContext appDbContext) : base(appDbContext)
         {
         }
-
         public async Task<IEnumerable<City>> GetAll()
         {
             return await _appDbContext.Cities.ToListAsync();
@@ -21,7 +21,6 @@ namespace BasePerson.Api.Repositories
         {
             return await _appDbContext.Cities.FindAsync(id);
         }
-
         public async Task<City> Create(CityDto cityDto)
         {
             if (_appDbContext.Cities.Any(x => x.Name == cityDto.Name))
@@ -37,7 +36,6 @@ namespace BasePerson.Api.Repositories
 
             return city;
         }
-
         public async Task Update(UpdateCityDto updateCityDto)
         {
             if (_appDbContext.Cities.Any(x => x.Name == updateCityDto.Name && x.Id != updateCityDto.Id))
@@ -54,17 +52,15 @@ namespace BasePerson.Api.Repositories
             existingCity.Name = updateCityDto.Name;
             await _appDbContext.SaveChangesAsync();
         }
-
-        public async Task Delete (int id)
+        public async Task Delete(int id)
         {
             var city = await GetById(id);
-            if (city == null) 
+            if (city == null)
                 throw new InvalidOperationException("City not found");
 
             _appDbContext.Cities.Remove(city);
             await _appDbContext.SaveChangesAsync();
         }
-
         public async Task Exist(int id)
         {
             var cityExists = await _appDbContext.Cities.AnyAsync(c => c.Id == id);
