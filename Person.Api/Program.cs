@@ -7,7 +7,7 @@ using Person.Infrastructure.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddScoped<ICityRepository, CityRepository>();
+builder.Services.AddScoped<CityRepository>();
 builder.Services.AddScoped<PeopleService>();
 builder.Services.AddScoped<PhonesRepository>();
 

@@ -1,4 +1,5 @@
 ﻿using BasePerson.Core.Dtos;
+using Person.Core.Domains;
 
 namespace BasePerson.Core.Domains
 {
@@ -12,6 +13,8 @@ namespace BasePerson.Core.Domains
     {
         public int Id { get; set; }
         public int FirstPersonId { get; set; }
+        public Customer? FirstPerson { get; set; }
+        public Customer? SecondPerson { get; set; }
         public int SecondPersonId { get; set; }
         public PersonType ConnectionType { get; set; }
 

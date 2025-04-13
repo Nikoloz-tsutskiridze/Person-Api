@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
 using BasePerson.Core.Dtos;
 using Person.Core.Domains;
+using BasePerson.Core.Domains;
 
 namespace Person.Core.Domains
 {
@@ -45,9 +46,14 @@ namespace Person.Core.Domains
 
         [Required]
         public int CityId { get; set; }
-        public City City { get; set; }
+        public City? City { get; set; }
 
         public List<Phone> Phones { get; set; } = new List<Phone>();
+
+        public ICollection<PhoneRelativePerson>? PhoneRelativePeople { get; set; }
+
+        public ICollection<PeopleRelative>? FirstPersonRelatives { get; set; }
+        public ICollection<PeopleRelative>? SecondPersonRelatives { get; set; }
 
         public ExistingCustomerDto ConvertToDto()
         {

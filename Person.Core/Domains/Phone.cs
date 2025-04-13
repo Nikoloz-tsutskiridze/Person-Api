@@ -1,4 +1,5 @@
-﻿using BasePerson.Core.Dtos;
+﻿using BasePerson.Core.Domains;
+using BasePerson.Core.Dtos;
 using System.Numerics;
 
 namespace Person.Core.Domains
@@ -15,7 +16,7 @@ namespace Person.Core.Domains
         public int Id { get; set; }
         public PhoneType Type { get; set; }
         public string Number { get; set; } = null!;
-
+        public ICollection<PhoneRelativePerson>? PhoneRelativePeople { get; set; }
         public PhoneDto ConvertToDto()
         {
             var phoneDto = new PhoneDto

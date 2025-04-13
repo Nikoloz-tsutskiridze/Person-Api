@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Person.Application.Interfaces;
 using Person.Core.Domains;
+using Person.Infrastructure.Repositories;
 
 namespace Person.Api.Controllers
 {
@@ -9,8 +10,8 @@ namespace Person.Api.Controllers
     [ApiController]
     public class CitiesController : ControllerBase
     {
-        private readonly ICityRepository _cityRepository;
-        public CitiesController(ICityRepository cityRepository)
+        private readonly CityRepository _cityRepository;
+        public CitiesController(CityRepository cityRepository)
         {
             _cityRepository = cityRepository;
         }
