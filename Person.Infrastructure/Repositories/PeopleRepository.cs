@@ -146,11 +146,26 @@ namespace BasePerson.Api.Repositories
         public async Task<bool> Delete(int id)
         {
             var person = await GetCustomerFromDatabase(id);
+
+            var phoneRelations = await _appDbContext.PhoneRelativePeople
+                .Where(x => x.PersonId == id)
+                .ToListAsync();
+
+            _appDbContext.PhoneRelativePeople.RemoveRange(phoneRelations);
+
+            var peopleRelations = await _appDbContext.PeopleRelative
+                .Where(x => x.FirstPersonId == id || x.SecondPersonId == id)
+                .ToListAsync();
+
+            _appDbContext.PeopleRelative.RemoveRange(peopleRelations);
+
             _appDbContext.People.Remove(person);
+
             await _appDbContext.SaveChangesAsync();
 
             return true;
         }
+
         private async Task<Customer> GetCustomerFromDatabase(int id)
         {
             var person = await _appDbContext.People.FindAsync(id);
@@ -160,7 +175,11 @@ namespace BasePerson.Api.Repositories
         }
         public async Task<int> ConnectPhone(PhoneRelativePersonDto phoneRelativePersonDto)
         {
-            // exeftioni ori ertnairi kavshiri roar sheiqnas persons shoris
+            var existingConnection = await _appDbContext.PhoneRelativePeople
+                .AnyAsync(x => x.PersonId == phoneRelativePersonDto.PersonId && x.PhoneId == phoneRelativePersonDto.PhoneId);
+
+            if (existingConnection)
+                throw new InvalidOperationException($"This phone is already connected to person ID:{phoneRelativePersonDto.PersonId}.");
 
             var phoneRelativePerson = new PhoneRelativePerson
             {
@@ -172,6 +191,7 @@ namespace BasePerson.Api.Repositories
             await _appDbContext.SaveChangesAsync();
             return phoneRelativePerson.Id;
         }
+
         public async Task<bool> DisconectPhone(int id)
         {
             var relation = await _appDbContext.PhoneRelativePeople.SingleOrDefaultAsync(x => x.Id == id);
