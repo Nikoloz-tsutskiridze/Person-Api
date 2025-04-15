@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Person.Core.Domains;
 
 namespace Person.Application.Interfaces
 {
     public interface ICustomerRepository
     {
+        Task<List<Customer>> GetCustomersWithBirthdayTodayAsync();
     }
 }

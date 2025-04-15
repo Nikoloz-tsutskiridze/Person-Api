@@ -3,21 +3,25 @@ using Person.Application.Interfaces;
 using Person.Core.Domains;
 using Person.Infrastructure.Data;
 
-public class CustomerRepository : ICustomerRepository
+namespace Person.Infrastructure.Repositories
 {
-    private readonly AppDbContext _context;
-
-    public CustomerRepository(AppDbContext context)
+    public class CustomerRepository : ICustomerRepository
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    public async Task<List<Customer>> GetCustomersWithBirthdayTodayAsync()
-    {
-        var today = DateTime.Today;
-        return await _context.People
-            .Where(c => c.DateOfBirth.Month == today.Month && c.DateOfBirth.Day == today.Day)
-            .ToListAsync();
-    }
+        public CustomerRepository(AppDbContext context)
+        {
+            _context = context;
+        }
 
+        public async Task<List<Customer>> GetCustomersWithBirthdayTodayAsync()
+        {
+            var today = DateTime.Today;
+
+            return await _context.People
+                .Where(c => c.DateOfBirth.Day == today.Day && c.DateOfBirth.Month == today.Month)
+                .ToListAsync();
+        }
+    }
 }
+
